@@ -4,8 +4,8 @@
 
 [![Edge Add-ons](https://img.shields.io/badge/Edge-Available-0078D4?logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/keka-time-capture-pro/nafcioiaipfahhkpgmgbjpildbkabonn)
 [![Chrome Extension](https://img.shields.io/badge/Chrome-Coming%20Soon-lightgrey?logo=google-chrome)](#)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.0.0-green.svg)](manifest.json)
+[![License](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-3.0-green.svg)](manifest.json)
 
 ---
 
@@ -394,26 +394,32 @@ We welcome contributions! Here's how you can help:
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is **copyright-protected** - see the [LICENSE](LICENSE) file for details.
+
+**Copyright © 2026 Sahil Kumar Sahoo. All Rights Reserved.**
+
+**For Permission to Use:**
+- 📧 Email: sahilkumarsahoo001@gmail.com
+- 📝 Include your intended use case
+- ⏳ Wait for written approval
+
+**End Users Can:**
+- ✅ Install from official stores (Edge, Chrome)
+- ✅ Use the extension for personal attendance tracking
+- ✅ View source code for educational purposes
+
+**Developers/Organizations Must:**
+- 📩 Request permission before modifying or redistributing
+- 🤝 Get written approval for commercial use
+- 📋 Respect copyright and licensing terms
 
 ```
-MIT License
+Copyright © 2026 Sahil Kumar Sahoo. All Rights Reserved.
 
-Copyright (c) 2026 Sahil Kumar Sahoo
+Usage requires explicit permission from the copyright holder.
+Contact: sahilkumarsahoo001@gmail.com
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
 ```
 
 ---
@@ -431,7 +437,7 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 
 - **Edge Add-ons**: [Leave a Review](https://microsoftedge.microsoft.com/addons/detail/keka-time-capture-pro/nafcioiaipfahhkpgmgbjpildbkabonn)
 - **Issues**: [GitHub Issues](https://github.com/sahilkumarsahoo07/Keka-Time-Capture-Pro/issues)
-- **Email**: sahilkumarsahoo07@example.com
+- **Email**: sahilkumarsahoo001@gmail.com
 - **Documentation**: [Wiki](https://github.com/sahilkumarsahoo07/Keka-Time-Capture-Pro/wiki)
 
 ---
@@ -454,7 +460,7 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 
 ## 📊 Changelog
 
-### Version 1.0.0 (2026-01-12)
+### Version 3.0 (2026-01-12)
 - ✨ Initial release
 - ✅ Real-time work tracking
 - ✅ Weekly analytics
