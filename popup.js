@@ -326,7 +326,15 @@ function setupAutoRefresh() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // --- INITIAL SETUP ---
+    // --- INSTANT LOAD (CACHING) ---
+    chrome.storage.local.get('latestAppData', (result) => {
+        if (result.latestAppData) {
+            console.log("Loading cached data...");
+            handleDataUpdate(result.latestAppData);
+        }
+    });
+
+    // --- INITIAL SETUP (FRESH FETCH) ---
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         if (tabs[0]?.url?.includes('keka.com')) {
             chrome.scripting.executeScript({ target: { tabId: tabs[0].id }, files: ['content.js'] });
@@ -401,50 +409,55 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- Completion Notification checkbox: restore saved state and persist changes ---
-    const completionCheckbox = document.getElementById('completion-notification');
-    if (completionCheckbox) {
-        // Restore saved preference (default: true)
-        chrome.storage.sync.get({ completionNotification: true }, (items) => {
-            try {
-                completionCheckbox.checked = !!items.completionNotification;
-            } catch (e) {
-                completionCheckbox.checked = true;
-            }
-        });
-
-        // Save preference when user toggles checkbox
-        completionCheckbox.addEventListener('change', () => {
-            const val = !!completionCheckbox.checked;
-            chrome.storage.sync.set({ completionNotification: val }, () => {
-                const status = document.getElementById('settings-status');
-                if (status) {
-                    status.textContent = val ? 'Notifications enabled' : 'Notifications disabled';
-                    status.classList.add('success-message');
-                    setTimeout(() => { status.textContent = ''; status.classList.remove('success-message'); }, 1200);
-                }
-            });
-        });
-    }
-
-    // --- ENHANCED SETTINGS EVENT HANDLERS ---
-
-    // Toggle Switch Handler
-    function setupToggleSwitch(toggleId, checkboxId) {
+    // --- ENHANCED SETTINGS: UNIFIED PERSISTENT TOGGLE HANDLER ---
+    function setupPersistentToggle(toggleId, checkboxId, storageKey, defaultValue = true, onSave = null) {
         const toggle = document.getElementById(toggleId);
         const checkbox = document.getElementById(checkboxId);
-        if (toggle && checkbox) {
-            toggle.addEventListener('click', () => {
-                checkbox.checked = !checkbox.checked;
-                toggle.classList.toggle('active', checkbox.checked);
+        if (!toggle || !checkbox) return;
+
+        // 1. Restore saved state (checkbox + visual)
+        chrome.storage.sync.get({ [storageKey]: defaultValue }, (items) => {
+            const isChecked = !!items[storageKey];
+            checkbox.checked = isChecked;
+            toggle.classList.toggle('active', isChecked);
+        });
+
+        // 2. Handle click
+        toggle.addEventListener('click', () => {
+            // Toggle check
+            checkbox.checked = !checkbox.checked;
+            const newVal = checkbox.checked;
+
+            // Sync visual
+            toggle.classList.toggle('active', newVal);
+
+            // Save to storage
+            const update = {};
+            update[storageKey] = newVal;
+            chrome.storage.sync.set(update, () => {
+                if (onSave) onSave(newVal);
             });
-        }
+        });
     }
 
-    setupToggleSwitch('completion-notification-toggle', 'completion-notification');
-    setupToggleSwitch('sound-notification-toggle', 'sound-notification');
-    setupToggleSwitch('badge-icon-toggle', 'badge-icon');
-    setupToggleSwitch('auto-backup-toggle', 'auto-backup');
+    // Completion Notification
+    setupPersistentToggle('completion-notification-toggle', 'completion-notification', 'completionNotification', true, (val) => {
+        const status = document.getElementById('settings-status');
+        if (status) {
+            status.textContent = val ? 'Notifications enabled' : 'Notifications disabled';
+            status.classList.add('success-message');
+            setTimeout(() => { status.textContent = ''; status.classList.remove('success-message'); }, 1200);
+        }
+    });
+
+    // Sound Notification
+    setupPersistentToggle('sound-notification-toggle', 'sound-notification', 'soundNotification', false); // Default false
+
+    // Badge Icon
+    setupPersistentToggle('badge-icon-toggle', 'badge-icon', 'badgeIcon', true); // Default true
+
+    // Auto Backup
+    setupPersistentToggle('auto-backup-toggle', 'auto-backup', 'autoBackup', false); // Default false
 
     // Stepper Button Handlers
     function setupStepper(decreaseId, increaseId, inputId, min = 0, max = 100) {
@@ -548,7 +561,15 @@ function applyTheme(theme) {
 
 
 // --- DATA HANDLING ---
+// --- DATA HANDLING ---
 chrome.runtime.onMessage.addListener(async (data) => {
+    // Ensure we handle the new typed message or legacy untyped ones (if any)
+    if (data.type === 'DATA_UPDATE' || !data.type) {
+        handleDataUpdate(data);
+    }
+});
+
+async function handleDataUpdate(data) {
     if (timerInterval) clearInterval(timerInterval);
     if (data.error) {
         showError(data.error);
@@ -571,7 +592,8 @@ chrome.runtime.onMessage.addListener(async (data) => {
     setupStaticElements();
 
     // Filter data for This Week on initial load
-    await requestWeekData(0);
+    // Note: requestWeekData depends on originalAppData being set
+    await requestWeekData(isViewingLastWeek ? -1 : 0);
 
     renderHistoricalInsights();
     renderAchievements();
@@ -584,7 +606,7 @@ chrome.runtime.onMessage.addListener(async (data) => {
         updateAnalyticsRealtime(); // Update analytics in real-time
     }, 1000);
     updateDisplay();
-});
+}
 
 // --- HELPER FUNCTION FOR DATE PARSING ---
 function parseDateFromString(dateStr) {

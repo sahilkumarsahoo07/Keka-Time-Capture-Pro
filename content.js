@@ -193,6 +193,8 @@
     try {
         const data = await parseAndCalculate();
         if (data && typeof data === 'object') {
+            // Tag the message for background/popup identification
+            data.type = 'DATA_UPDATE';
             chrome.runtime.sendMessage(data, (response) => {
                 if (chrome.runtime.lastError) {
                     console.error("Error sending message:", chrome.runtime.lastError.message);
@@ -330,10 +332,13 @@ async function parseAndCalculate() {
             }
 
             // Extract punch times from dropdown details
-            const punchData = await extractPunchTimes(row);
-            checkIn = punchData.checkIn;
-            checkOut = punchData.checkOut;
-            breakTime = punchData.breakTime;
+            // OPTIMIZATION: We don't need detailed punch times for past days/history,
+            // and opening every row is slow and intrusive ("sits open everything").
+            // We only need the summary hours which is already visible.
+            // const punchData = await extractPunchTimes(row);
+            checkIn = null; // punchData.checkIn;
+            checkOut = null; // punchData.checkOut;
+            breakTime = 0; // punchData.breakTime;
         }
         // --------------------------------------
 

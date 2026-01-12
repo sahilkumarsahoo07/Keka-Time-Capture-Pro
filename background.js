@@ -108,6 +108,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             chrome.alarms.clearAll((wasCleared) => {
                 if (sendResponse) sendResponse({ success: true });
             });
+        }
+        else if (request.type === "DATA_UPDATE") {
+            // CACHE: Save the latest data to local storage so popup can load it instantly
+            chrome.storage.local.set({ 'latestAppData': request });
         } else {
             if (sendResponse) sendResponse({ success: false, error: "Unknown request type" });
         }
