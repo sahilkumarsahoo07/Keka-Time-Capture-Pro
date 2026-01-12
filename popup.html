@@ -1,0 +1,3429 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Keka Time Capture</title>
+    <style>
+        :root {
+            --primary-color: #6c63ff;
+            --primary-dark: #5a52d5;
+            --text-color: #ffffff;
+            --label-color: rgba(255, 255, 255, 0.7);
+            --bg-color: #1a1a2e;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --success-color: #4cd964;
+            --warning-color: #ffcc00;
+            --pending-color: #ff9500;
+            --completed-color: #4cd964;
+            --error-color: #ff3b30;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+            --glass-blur: blur(10px);
+            --border-radius: 12px;
+        }
+
+        /* --- THEME DEFINITIONS --- */
+
+        .dark-theme body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+
+        .light-theme {
+            --primary-color: #007aff;
+            --primary-dark: #0056b3;
+            --text-color: #1d1d1f;
+            --label-color: #6e6e73;
+            --bg-color: #f5f5f7;
+            --card-bg: #ffffff;
+            --card-border: #e0e0e0;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .light-theme body {
+            background: var(--bg-color);
+        }
+
+        .light-theme .nav-item.active,
+        .light-theme .toggle-btn.active {
+            background: rgba(0, 122, 255, 0.1);
+        }
+
+        .purple-theme {
+            --primary-color: #bf77f6;
+            --primary-dark: #a95de2;
+            --text-color: #ffffff;
+            --label-color: #e0c8f9;
+            --bg-color: #2c2a4a;
+            --card-bg: rgba(255, 255, 255, 0.06);
+            --card-border: rgba(255, 255, 255, 0.12);
+        }
+
+        .purple-theme body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .purple-theme .nav-item.active,
+        .purple-theme .toggle-btn.active {
+            background: rgba(191, 119, 246, 0.15);
+        }
+
+        .true-black-theme {
+            --primary-color: #007aff;
+            --primary-dark: #0056b3;
+            --text-color: #f1f1f1;
+            --label-color: #888888;
+            --bg-color: #000000;
+            --card-bg: #111111;
+            --card-border: #222222;
+        }
+
+        .true-black-theme body {
+            background: var(--bg-color);
+        }
+
+        .true-black-theme .nav-item.active,
+        .true-black-theme .toggle-btn.active {
+            background: rgba(0, 122, 255, 0.15);
+        }
+
+        .nord-theme {
+            --primary-color: #88C0D0;
+            --primary-dark: #81A1C1;
+            --text-color: #ECEFF4;
+            --label-color: #D8DEE9;
+            --bg-color: #2E3440;
+            --card-bg: rgba(76, 86, 106, 0.2);
+            --card-border: rgba(76, 86, 106, 0.4);
+        }
+
+        .nord-theme body {
+            background: var(--bg-color);
+        }
+
+        .nord-theme .nav-item.active,
+        .nord-theme .toggle-btn.active {
+            background: rgba(136, 192, 208, 0.1);
+        }
+
+        .nord-theme .late-badge {
+            background: #BF616A;
+        }
+
+        .solarized-theme {
+            --primary-color: #268bd2;
+            --primary-dark: #2aa198;
+            --text-color: #93a1a1;
+            --label-color: #839496;
+            --bg-color: #002b36;
+            --card-bg: #073642;
+            --card-border: rgba(131, 148, 150, 0.2);
+        }
+
+        .solarized-theme body {
+            background: var(--bg-color);
+        }
+
+        .solarized-theme .nav-item.active,
+        .solarized-theme .toggle-btn.active {
+            background: rgba(38, 139, 210, 0.1);
+        }
+
+        .solarized-theme .late-badge {
+            background: #dc322f;
+        }
+
+        .solarized-theme .status-value,
+        .solarized-theme .progress-percent {
+            color: #eee8d5;
+        }
+
+        .dracula-theme {
+            --primary-color: #bd93f9;
+            --primary-dark: #ff79c6;
+            --text-color: #f8f8f2;
+            --label-color: #6272a4;
+            --bg-color: #282a36;
+            --card-bg: rgba(68, 71, 90, 0.3);
+            --card-border: rgba(98, 114, 164, 0.5);
+        }
+
+        .dracula-theme body {
+            background: var(--bg-color);
+        }
+
+        .dracula-theme .nav-item.active,
+        .dracula-theme .toggle-btn.active {
+            background: rgba(189, 147, 249, 0.1);
+        }
+
+        .dracula-theme .late-badge {
+            background: #ff5555;
+        }
+
+        .monokai-theme {
+            --primary-color: #f92672;
+            --primary-dark: #fd5ff0;
+            --text-color: #f8f8f2;
+            --label-color: #75715e;
+            --bg-color: #272822;
+            --card-bg: #20201c;
+            --card-border: #414339;
+        }
+
+        .monokai-theme body {
+            background: var(--bg-color);
+        }
+
+        .monokai-theme .nav-item.active,
+        .monokai-theme .toggle-btn.active {
+            background: rgba(249, 38, 114, 0.1);
+        }
+
+        .monokai-theme .progress-ring-fill {
+            stroke: #a6e22e;
+        }
+
+        .gruvbox-theme {
+            --primary-color: #fabd2f;
+            --primary-dark: #fe8019;
+            --text-color: #ebdbb2;
+            --label-color: #a89984;
+            --bg-color: #282828;
+            --card-bg: #3c3836;
+            --card-border: #504945;
+        }
+
+        .gruvbox-theme body {
+            background: var(--bg-color);
+        }
+
+        .gruvbox-theme .nav-item.active,
+        .gruvbox-theme .toggle-btn.active {
+            background: rgba(250, 189, 47, 0.1);
+        }
+
+        .one-dark-pro-theme {
+            --primary-color: #61afef;
+            --primary-dark: #c678dd;
+            --text-color: #abb2bf;
+            --label-color: #5c6370;
+            --bg-color: #282c34;
+            --card-bg: #21252b;
+            --card-border: #3b4048;
+        }
+
+        .one-dark-pro-theme body {
+            background: var(--bg-color);
+        }
+
+        .one-dark-pro-theme .nav-item.active,
+        .one-dark-pro-theme .toggle-btn.active {
+            background: rgba(97, 175, 239, 0.1);
+        }
+
+        .catppuccin-theme {
+            --primary-color: #cba6f7;
+            --primary-dark: #f5c2e7;
+            --text-color: #cdd6f4;
+            --label-color: #a6adc8;
+            --bg-color: #1e1e2e;
+            --card-bg: #181825;
+            --card-border: #313244;
+        }
+
+        .catppuccin-theme body {
+            background: var(--bg-color);
+        }
+
+        .catppuccin-theme .nav-item.active,
+        .catppuccin-theme .toggle-btn.active {
+            background: rgba(203, 166, 247, 0.1);
+        }
+
+        .cyberpunk-theme {
+            --primary-color: #00f6f6;
+            --primary-dark: #f600f6;
+            --text-color: #ffffff;
+            --label-color: #888888;
+            --bg-color: #0c0029;
+            --card-bg: rgba(246, 0, 246, 0.05);
+            --card-border: rgba(0, 246, 246, 0.2);
+        }
+
+        .cyberpunk-theme body {
+            background: var(--bg-color);
+        }
+
+        .cyberpunk-theme .nav-item.active,
+        .cyberpunk-theme .toggle-btn.active {
+            background: rgba(0, 246, 246, 0.1);
+        }
+
+        .tokyo-night-theme {
+            --primary-color: #7aa2f7;
+            --primary-dark: #bb9af7;
+            --text-color: #c0caf5;
+            --label-color: #565f89;
+            --bg-color: #1a1b26;
+            --card-bg: #1f2335;
+            --card-border: #2a2f41;
+        }
+
+        .tokyo-night-theme body {
+            background: var(--bg-color);
+        }
+
+        .tokyo-night-theme .nav-item.active,
+        .tokyo-night-theme .toggle-btn.active {
+            background: rgba(122, 162, 247, 0.1);
+        }
+
+        .material-ocean-theme {
+            --primary-color: #82B1FF;
+            --primary-dark: #C3E88D;
+            --text-color: #EEFFFF;
+            --label-color: #546E7A;
+            --bg-color: #0F111A;
+            --card-bg: #1A1C25;
+            --card-border: #2f334d;
+        }
+
+        .material-ocean-theme body {
+            background: var(--bg-color);
+        }
+
+        .material-ocean-theme .nav-item.active,
+        .material-ocean-theme .toggle-btn.active {
+            background: rgba(130, 177, 255, 0.1);
+        }
+
+        .everforest-theme {
+            --primary-color: #a7c080;
+            --primary-dark: #d699b6;
+            --text-color: #d3c6aa;
+            --label-color: #859289;
+            --bg-color: #2b3339;
+            --card-bg: #374145;
+            --card-border: #4a565c;
+        }
+
+        .everforest-theme body {
+            background: var(--bg-color);
+        }
+
+        .everforest-theme .nav-item.active,
+        .everforest-theme .toggle-btn.active {
+            background: rgba(167, 192, 128, 0.1);
+        }
+
+        .rose-pine-theme {
+            --primary-color: #eb6f92;
+            --primary-dark: #f6c177;
+            --text-color: #e0def4;
+            --label-color: #908caa;
+            --bg-color: #191724;
+            --card-bg: #1f1d2e;
+            --card-border: #403d52;
+        }
+
+        .rose-pine-theme body {
+            background: var(--bg-color);
+        }
+
+        .rose-pine-theme .nav-item.active,
+        .rose-pine-theme .toggle-btn.active {
+            background: rgba(235, 111, 146, 0.1);
+        }
+
+        /* --- NEW ATTRACTIVE THEMES --- */
+
+        .ocean-breeze-theme {
+            --primary-color: #0077be;
+            --primary-dark: #005a8d;
+            --text-color: #ffffff;
+            --label-color: #b3d9f2;
+            --bg-color: #001f3f;
+            --card-bg: rgba(0, 119, 190, 0.1);
+            --card-border: rgba(0, 119, 190, 0.3);
+        }
+
+        .ocean-breeze-theme body {
+            background: linear-gradient(135deg, #001f3f 0%, #0077be 50%, #00a8e8 100%);
+        }
+
+        .ocean-breeze-theme .nav-item.active,
+        .ocean-breeze-theme .toggle-btn.active {
+            background: rgba(0, 119, 190, 0.2);
+        }
+
+        .sunset-glow-theme {
+            --primary-color: #ff6b6b;
+            --primary-dark: #ee5a52;
+            --text-color: #ffffff;
+            --label-color: #ffd6a5;
+            --bg-color: #2c1810;
+            --card-bg: rgba(255, 107, 107, 0.1);
+            --card-border: rgba(255, 107, 107, 0.3);
+        }
+
+        .sunset-glow-theme body {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ffa500 50%, #ffcb77 100%);
+        }
+
+        .sunset-glow-theme .nav-item.active,
+        .sunset-glow-theme .toggle-btn.active {
+            background: rgba(255, 107, 107, 0.2);
+        }
+
+        .forest-green-theme {
+            --primary-color: #52b788;
+            --primary-dark: #40916c;
+            --text-color: #f1faee;
+            --label-color: #b7e4c7;
+            --bg-color: #1b4332;
+            --card-bg: rgba(82, 183, 136, 0.1);
+            --card-border: rgba(82, 183, 136, 0.3);
+        }
+
+        .forest-green-theme body {
+            background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 50%, #52b788 100%);
+        }
+
+        .forest-green-theme .nav-item.active,
+        .forest-green-theme .toggle-btn.active {
+            background: rgba(82, 183, 136, 0.2);
+        }
+
+        .cherry-blossom-theme {
+            --primary-color: #ff69b4;
+            --primary-dark: #ff1493;
+            --text-color: #4a4a4a;
+            --label-color: #8b8b8b;
+            --bg-color: #fff0f5;
+            --card-bg: rgba(255, 105, 180, 0.05);
+            --card-border: rgba(255, 105, 180, 0.2);
+        }
+
+        .cherry-blossom-theme body {
+            background: linear-gradient(135deg, #fff0f5 0%, #ffc0cb 50%, #ffb6c1 100%);
+        }
+
+        .cherry-blossom-theme .nav-item.active,
+        .cherry-blossom-theme .toggle-btn.active {
+            background: rgba(255, 105, 180, 0.15);
+        }
+
+        .neon-cyber-theme {
+            --primary-color: #00ffff;
+            --primary-dark: #00d4d4;
+            --text-color: #ffffff;
+            --label-color: #b3ffff;
+            --bg-color: #0a0e27;
+            --card-bg: rgba(0, 255, 255, 0.05);
+            --card-border: rgba(0, 255, 255, 0.3);
+        }
+
+        .neon-cyber-theme body {
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #2d2d5f 100%);
+        }
+
+        .neon-cyber-theme .nav-item.active,
+        .neon-cyber-theme .toggle-btn.active {
+            background: rgba(0, 255, 255, 0.15);
+        }
+
+        .pastel-dream-theme {
+            --primary-color: #b4a7d6;
+            --primary-dark: #9b8fc4;
+            --text-color: #4a4a4a;
+            --label-color: #8b8b8b;
+            --bg-color: #f5f0ff;
+            --card-bg: rgba(180, 167, 214, 0.1);
+            --card-border: rgba(180, 167, 214, 0.3);
+        }
+
+        .pastel-dream-theme body {
+            background: linear-gradient(135deg, #f5f0ff 0%, #e6d9ff 50%, #d4c5f9 100%);
+        }
+
+        .pastel-dream-theme .nav-item.active,
+        .pastel-dream-theme .toggle-btn.active {
+            background: rgba(180, 167, 214, 0.2);
+        }
+
+        .galaxy-theme {
+            --primary-color: #9d4edd;
+            --primary-dark: #7b2cbf;
+            --text-color: #ffffff;
+            --label-color: #c8b6ff;
+            --bg-color: #10002b;
+            --card-bg: rgba(157, 78, 221, 0.1);
+            --card-border: rgba(157, 78, 221, 0.3);
+        }
+
+        .galaxy-theme body {
+            background: linear-gradient(135deg, #10002b 0%, #240046 30%, #3c096c 60%, #5a189a 100%);
+        }
+
+        .galaxy-theme .nav-item.active,
+        .galaxy-theme .toggle-btn.active {
+            background: rgba(157, 78, 221, 0.2);
+        }
+
+        .mint-fresh-theme {
+            --primary-color: #00d9a3;
+            --primary-dark: #00b386;
+            --text-color: #1a1a1a;
+            --label-color: #4a4a4a;
+            --bg-color: #f0fff4;
+            --card-bg: rgba(0, 217, 163, 0.05);
+            --card-border: rgba(0, 217, 163, 0.2);
+        }
+
+        .mint-fresh-theme body {
+            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 50%, #9ae6b4 100%);
+        }
+
+        .mint-fresh-theme .nav-item.active,
+        .mint-fresh-theme .toggle-btn.active {
+            background: rgba(0, 217, 163, 0.15);
+        }
+
+        .coral-reef-theme {
+            --primary-color: #ff7f50;
+            --primary-dark: #ff6347;
+            --text-color: #ffffff;
+            --label-color: #ffd4c4;
+            --bg-color: #1a2332;
+            --card-bg: rgba(255, 127, 80, 0.1);
+            --card-border: rgba(255, 127, 80, 0.3);
+        }
+
+        .coral-reef-theme body {
+            background: linear-gradient(135deg, #1a2332 0%, #2a4858 50%, #3a6878 100%);
+        }
+
+        .coral-reef-theme .nav-item.active,
+        .coral-reef-theme .toggle-btn.active {
+            background: rgba(255, 127, 80, 0.2);
+        }
+
+        .midnight-purple-theme {
+            --primary-color: #9333ea;
+            --primary-dark: #7e22ce;
+            --text-color: #f3e8ff;
+            --label-color: #c4b5fd;
+            --bg-color: #1e1b4b;
+            --card-bg: rgba(147, 51, 234, 0.1);
+            --card-border: rgba(147, 51, 234, 0.3);
+        }
+
+        .midnight-purple-theme body {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+        }
+
+        .midnight-purple-theme .nav-item.active,
+        .midnight-purple-theme .toggle-btn.active {
+            background: rgba(147, 51, 234, 0.2);
+        }
+
+        .arctic-blue-theme {
+            --primary-color: #60a5fa;
+            --primary-dark: #3b82f6;
+            --text-color: #f0f9ff;
+            --label-color: #bfdbfe;
+            --bg-color: #0c4a6e;
+            --card-bg: rgba(96, 165, 250, 0.1);
+            --card-border: rgba(96, 165, 250, 0.3);
+        }
+
+        .arctic-blue-theme body {
+            background: linear-gradient(135deg, #0c4a6e 0%, #075985 50%, #0369a1 100%);
+        }
+
+        .arctic-blue-theme .nav-item.active,
+        .arctic-blue-theme .toggle-btn.active {
+            background: rgba(96, 165, 250, 0.2);
+        }
+
+        .autumn-leaves-theme {
+            --primary-color: #f59e0b;
+            --primary-dark: #d97706;
+            --text-color: #fef3c7;
+            --label-color: #fde68a;
+            --bg-color: #451a03;
+            --card-bg: rgba(245, 158, 11, 0.1);
+            --card-border: rgba(245, 158, 11, 0.3);
+        }
+
+        .autumn-leaves-theme body {
+            background: linear-gradient(135deg, #451a03 0%, #78350f 50%, #92400e 100%);
+        }
+
+        .autumn-leaves-theme .nav-item.active,
+        .autumn-leaves-theme .toggle-btn.active {
+            background: rgba(245, 158, 11, 0.2);
+        }
+
+        /* === PROFESSIONAL WORK THEMES === */
+
+        .corporate-blue-theme {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --text-color: #eff6ff;
+            --label-color: #bfdbfe;
+            --bg-color: #1e3a8a;
+            --card-bg: rgba(37, 99, 235, 0.1);
+            --card-border: rgba(37, 99, 235, 0.25);
+        }
+
+        .corporate-blue-theme body {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
+        }
+
+        .corporate-blue-theme .nav-item.active,
+        .corporate-blue-theme .toggle-btn.active {
+            background: rgba(37, 99, 235, 0.2);
+        }
+
+        .executive-gray-theme {
+            --primary-color: #6b7280;
+            --primary-dark: #4b5563;
+            --text-color: #f9fafb;
+            --label-color: #d1d5db;
+            --bg-color: #1f2937;
+            --card-bg: rgba(107, 114, 128, 0.1);
+            --card-border: rgba(107, 114, 128, 0.25);
+        }
+
+        .executive-gray-theme body {
+            background: linear-gradient(135deg, #111827 0%, #1f2937 50%, #374151 100%);
+        }
+
+        .executive-gray-theme .nav-item.active,
+        .executive-gray-theme .toggle-btn.active {
+            background: rgba(107, 114, 128, 0.2);
+        }
+
+        .professional-green-theme {
+            --primary-color: #059669;
+            --primary-dark: #047857;
+            --text-color: #ecfdf5;
+            --label-color: #a7f3d0;
+            --bg-color: #064e3b;
+            --card-bg: rgba(5, 150, 105, 0.1);
+            --card-border: rgba(5, 150, 105, 0.25);
+        }
+
+        .professional-green-theme body {
+            background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%);
+        }
+
+        .professional-green-theme .nav-item.active,
+        .professional-green-theme .toggle-btn.active {
+            background: rgba(5, 150, 105, 0.2);
+        }
+
+        .business-burgundy-theme {
+            --primary-color: #be123c;
+            --primary-dark: #9f1239;
+            --text-color: #fff1f2;
+            --label-color: #fecdd3;
+            --bg-color: #881337;
+            --card-bg: rgba(190, 18, 60, 0.1);
+            --card-border: rgba(190, 18, 60, 0.25);
+        }
+
+        .business-burgundy-theme body {
+            background: linear-gradient(135deg, #881337 0%, #9f1239 50%, #be123c 100%);
+        }
+
+        .business-burgundy-theme .nav-item.active,
+        .business-burgundy-theme .toggle-btn.active {
+            background: rgba(190, 18, 60, 0.2);
+        }
+
+        .modern-slate-theme {
+            --primary-color: #475569;
+            --primary-dark: #334155;
+            --text-color: #f1f5f9;
+            --label-color: #cbd5e1;
+            --bg-color: #1e293b;
+            --card-bg: rgba(71, 85, 105, 0.1);
+            --card-border: rgba(71, 85, 105, 0.25);
+        }
+
+        .modern-slate-theme body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+        }
+
+        .modern-slate-theme .nav-item.active,
+        .modern-slate-theme .toggle-btn.active {
+            background: rgba(71, 85, 105, 0.2);
+        }
+
+        .clean-white-theme {
+            --primary-color: #3b82f6;
+            --primary-dark: #2563eb;
+            --text-color: #1f2937;
+            --label-color: #6b7280;
+            --bg-color: #ffffff;
+            --card-bg: rgba(59, 130, 246, 0.05);
+            --card-border: rgba(59, 130, 246, 0.15);
+        }
+
+        .clean-white-theme body {
+            background: linear-gradient(135deg, #f9fafb 0%, #ffffff 50%, #f3f4f6 100%);
+        }
+
+        .clean-white-theme .nav-item.active,
+        .clean-white-theme .toggle-btn.active {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .charcoal-theme {
+            --primary-color: #71717a;
+            --primary-dark: #52525b;
+            --text-color: #fafafa;
+            --label-color: #d4d4d8;
+            --bg-color: #18181b;
+            --card-bg: rgba(113, 113, 122, 0.1);
+            --card-border: rgba(113, 113, 122, 0.25);
+        }
+
+        .charcoal-theme body {
+            background: linear-gradient(135deg, #09090b 0%, #18181b 50%, #27272a 100%);
+        }
+
+        .charcoal-theme .nav-item.active,
+        .charcoal-theme .toggle-btn.active {
+            background: rgba(113, 113, 122, 0.2);
+        }
+
+        .navy-professional-theme {
+            --primary-color: #1e40af;
+            --primary-dark: #1e3a8a;
+            --text-color: #dbeafe;
+            --label-color: #93c5fd;
+            --bg-color: #172554;
+            --card-bg: rgba(30, 64, 175, 0.1);
+            --card-border: rgba(30, 64, 175, 0.25);
+        }
+
+        .navy-professional-theme body {
+            background: linear-gradient(135deg, #0c1844 0%, #172554 50%, #1e3a8a 100%);
+        }
+
+        .navy-professional-theme .nav-item.active,
+        .navy-professional-theme .toggle-btn.active {
+            background: rgba(30, 64, 175, 0.2);
+        }
+
+        .warm-espresso-theme {
+            --primary-color: #92400e;
+            --primary-dark: #78350f;
+            --text-color: #fef3c7;
+            --label-color: #fde68a;
+            --bg-color: #451a03;
+            --card-bg: rgba(146, 64, 14, 0.1);
+            --card-border: rgba(146, 64, 14, 0.25);
+        }
+
+        .warm-espresso-theme body {
+            background: linear-gradient(135deg, #451a03 0%, #78350f 50%, #92400e 100%);
+        }
+
+        .warm-espresso-theme .nav-item.active,
+        .warm-espresso-theme .toggle-btn.active {
+            background: rgba(146, 64, 14, 0.2);
+        }
+
+        .cool-mint-theme {
+            --primary-color: #0d9488;
+            --primary-dark: #0f766e;
+            --text-color: #f0fdfa;
+            --label-color: #99f6e4;
+            --bg-color: #134e4a;
+            --card-bg: rgba(13, 148, 136, 0.1);
+            --card-border: rgba(13, 148, 136, 0.25);
+        }
+
+        .cool-mint-theme body {
+            background: linear-gradient(135deg, #042f2e 0%, #134e4a 50%, #0f766e 100%);
+        }
+
+        .cool-mint-theme .nav-item.active,
+        .cool-mint-theme .toggle-btn.active {
+            background: rgba(13, 148, 136, 0.2);
+        }
+
+        .soft-lavender-theme {
+            --primary-color: #9333ea;
+            --primary-dark: #7e22ce;
+            --text-color: #faf5ff;
+            --label-color: #e9d5ff;
+            --bg-color: #581c87;
+            --card-bg: rgba(147, 51, 234, 0.1);
+            --card-border: rgba(147, 51, 234, 0.25);
+        }
+
+        .soft-lavender-theme body {
+            background: linear-gradient(135deg, #4a148c 0%, #581c87 50%, #6b21a8 100%);
+        }
+
+        .soft-lavender-theme .nav-item.active,
+        .soft-lavender-theme .toggle-btn.active {
+            background: rgba(147, 51, 234, 0.2);
+        }
+
+        .steel-blue-theme {
+            --primary-color: #0284c7;
+            --primary-dark: #0369a1;
+            --text-color: #e0f2fe;
+            --label-color: #bae6fd;
+            --bg-color: #075985;
+            --card-bg: rgba(2, 132, 199, 0.1);
+            --card-border: rgba(2, 132, 199, 0.25);
+        }
+
+        .steel-blue-theme body {
+            background: linear-gradient(135deg, #0c4a6e 0%, #075985 50%, #0369a1 100%);
+        }
+
+        .steel-blue-theme .nav-item.active,
+        .steel-blue-theme .toggle-btn.active {
+            background: rgba(2, 132, 199, 0.2);
+        }
+
+        /* --- BASE STYLES --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            width: 420px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.4;
+            overflow: hidden;
+            position: relative;
+            font-size: 12px;
+            transition: background 0.3s ease;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            color: var(--text-color);
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--card-border);
+            animation: slideDown 0.4s ease-out;
+        }
+
+        .header h3 {
+            margin: 0;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+        }
+
+        .developer-credit {
+            font-size: 9px;
+            color: var(--label-color);
+            margin-top: 2px;
+            text-align: right;
+        }
+
+        .developer-credit a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .header-save-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+            flex-shrink: 0;
+
+        }
+
+        .header-save-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-save-btn:active {
+            transform: translateY(0);
+        }
+
+        .developer-credit a:hover {
+            text-decoration: underline;
+            opacity: 0.9;
+        }
+
+        .app-container {
+            display: flex;
+            height: 480px;
+        }
+
+        .sidebar {
+            width: 70px;
+            background: var(--card-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-right: 1px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            padding: 12px 0;
+            animation: slideInLeft 0.4s ease-out;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 12px 16px;
+            overflow-y: auto;
+        }
+
+        .view-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 0;
+            color: var(--label-color);
+            text-decoration: none;
+            font-size: 10px;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: var(--text-color);
+            border-left-color: var(--primary-color);
+            background: rgba(108, 99, 255, 0.1);
+        }
+
+        .nav-item:hover:not(.active) {
+            color: var(--text-color);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-icon {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .dashboard-card {
+            background: var(--card-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .card-header {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--label-color);
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--card-border);
+            background: rgba(0, 0, 0, 0.1);
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+        }
+
+        .card-body {
+            padding: 12px;
+            font-size: 11px;
+        }
+
+        .progress-ring-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 10px 0;
+            position: relative;
+        }
+
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring-bg {
+            fill: none;
+            stroke: rgba(0, 0, 0, 0.1);
+            stroke-width: 4;
+        }
+
+        .progress-ring-fill {
+            fill: none;
+            stroke: var(--primary-color);
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-dasharray: 226;
+            stroke-dashoffset: 226;
+            transition: stroke-dashoffset 0.5s ease;
+            filter: drop-shadow(0 0 2px var(--primary-color));
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .progress-percent {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .progress-label {
+            font-size: 9px;
+            color: var(--label-color);
+            margin-top: 2px;
+        }
+
+        .status-overview {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .status-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .status-label {
+            color: var(--label-color);
+            font-size: 9px;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .status-value {
+            color: var(--text-color);
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 0.4px;
+        }
+
+        .status-large {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-color);
+            text-shadow: 0 0 8px var(--primary-color);
+        }
+
+        .time-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .time-card {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .time-label {
+            color: var(--label-color);
+            font-size: 9px;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .time-value {
+            color: var(--text-color);
+            font-weight: 700;
+            font-size: 12px;
+            letter-spacing: 0.4px;
+        }
+
+        .break-list {
+            margin-top: 12px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .break-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 4px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 10px;
+        }
+
+        .break-item:last-child {
+            border-bottom: none;
+        }
+
+        .day-mode-toggle {
+            display: flex;
+            background: rgba(0, 0, 0, 0.1);
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            text-align: center;
+            padding: 6px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .toggle-btn.active {
+            background: rgba(108, 99, 255, 0.3);
+            color: var(--text-color);
+        }
+
+        .analytics-summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .weekly-day-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .weekly-day-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 4px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .late-badge {
+            background: var(--pending-color);
+            color: white;
+            font-size: 8px;
+            font-weight: 700;
+            padding: 2px 4px;
+            border-radius: 4px;
+            margin-left: auto;
+            margin-right: 8px;
+        }
+
+        #settings-btn,
+        #back-btn {
+            font-size: 14px;
+            text-decoration: none;
+            color: var(--text-color);
+            opacity: 0.85;
+            transition: all 0.2s;
+            padding: 4px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            background: var(--card-bg);
+            cursor: pointer;
+        }
+
+        #settings-btn:hover,
+        #back-btn:hover {
+            opacity: 1;
+            background: rgba(0, 0, 0, 0.1);
+            transform: rotate(90deg);
+        }
+
+        #back-btn:hover {
+            transform: translateX(-2px);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            margin-right: 5px;
+            box-shadow: 0 0 4px currentColor;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.pending {
+            background-color: var(--pending-color);
+        }
+
+        .status-indicator.completed {
+            background-color: var(--completed-color);
+        }
+
+        .time-display {
+            font-feature-settings: "tnum";
+            font-variant-numeric: tabular-nums;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* --- SETTINGS VIEW STYLES (UPDATED) --- */
+        #settings-view {
+            animation: slideInRight 0.3s ease-out;
+            height: 539px;
+            overflow-y: auto;
+        }
+
+        .settings-form {
+            padding: 12px 16px;
+            animation: fadeIn 0.4s ease-out 0.2s both;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group>label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .form-group input[type="number"],
+        .form-group input[type="checkbox"] {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--card-border);
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 11px;
+            transition: all 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px var(--primary-color);
+        }
+
+        .time-input-container {
+            display: flex;
+            align-items: center;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 8px 15px;
+            width: fit-content;
+            transition: all 0.2s ease;
+        }
+
+        .time-input-container:focus-within {
+            border-color: var(--primary-color);
+        }
+
+        .time-input {
+            width: 30px;
+            border: none;
+            background-color: transparent;
+            color: var(--text-color);
+            font-size: 16px;
+            font-weight: 400;
+            text-align: center;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        .time-input::placeholder {
+            color: var(--label-color);
+            opacity: 0.7;
+        }
+
+        .time-input:focus {
+            outline: none;
+        }
+
+        .time-separator {
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text-color);
+            margin: 0 8px;
+        }
+
+        .input-description {
+            font-size: 11px;
+            color: var(--label-color);
+            margin-top: 8px;
+            font-weight: 400;
+        }
+
+        #reset-late-count-btn,
+        .secondary-btn {
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        #reset-late-count-btn {
+            border: 1px solid var(--warning-color);
+            background: transparent;
+            color: var(--warning-color);
+        }
+
+        #reset-late-count-btn:hover {
+            background: rgba(255, 204, 0, 0.15);
+            color: white;
+        }
+
+        .secondary-btn {
+            border: 1px solid var(--primary-color);
+            background: transparent;
+            color: var(--primary-color);
+        }
+
+        .secondary-btn:hover {
+            background: rgba(108, 99, 255, 0.1);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 4px;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: normal;
+            cursor: pointer;
+            font-size: 11px;
+            color: var(--label-color);
+        }
+
+        .radio-group input {
+            accent-color: var(--primary-color);
+            transform: scale(0.9);
+        }
+
+        #save-settings-btn {
+            padding: 10px;
+            border-radius: 6px;
+            border: none;
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        #save-settings-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(108, 99, 255, 0.3);
+        }
+
+        #settings-view .header {
+            position: absolute;
+            width: 100%;
+            z-index: 199;
+            top: 0;
+            left: 0;
+        }
+
+        #settings-view .settings-form {
+            padding-top: 75px;
+        }
+
+
+        #settings-status,
+        #reset-status {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 10px;
+            font-weight: 600;
+            min-height: 14px;
+            transition: all 0.3s;
+        }
+
+        .success-message {
+            color: var(--success-color);
+        }
+
+        #reset-status {
+            color: var(--warning-color);
+        }
+
+        .settings-status-banner {
+            padding: 8px 16px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: none;
+            position: absolute;
+            top: 51px;
+            left: 0;
+            right: 0;
+            z-index: 198;
+        }
+
+        .settings-status-banner.success-message {
+            display: block;
+            background: rgba(76, 217, 100, 0.1);
+            color: var(--success-color);
+            border-bottom: 1px solid rgba(76, 217, 100, 0.2);
+        }
+
+
+        /* --- ENHANCED SETTINGS STYLES --- */
+        .settings-section {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .settings-section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .settings-section-icon {
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .settings-section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-color);
+            letter-spacing: 0.3px;
+            flex: 1;
+        }
+
+        .collapsible-header {
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.3s ease;
+        }
+
+        .collapsible-header:hover {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 8px;
+            margin: -8px;
+            margin-bottom: 6px;
+        }
+
+        .dropdown-arrow {
+            font-size: 12px;
+            transition: transform 0.3s ease;
+            color: var(--label-color);
+            margin-left: auto;
+        }
+
+        .collapsible-header.collapsed .dropdown-arrow {
+            transform: rotate(-90deg);
+        }
+
+        .collapsible-content {
+            max-height: 5000px !important;
+            overflow: visible !important;
+            transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease;
+            opacity: 1 !important;
+            padding-top: 0;
+        }
+
+        .collapsible-content.collapsed {
+            max-height: 0 !important;
+            opacity: 0 !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+        }
+
+        .settings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .settings-row:last-child {
+            border-bottom: none;
+        }
+
+        .setting-info {
+            flex: 1;
+        }
+
+        .setting-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 3px;
+        }
+
+        .setting-description {
+            font-size: 10px;
+            color: var(--label-color);
+            line-height: 1.4;
+        }
+
+        .setting-control {
+            flex-shrink: 0;
+            margin-left: 12px;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--card-border);
+        }
+
+        .toggle-switch.active {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 18px;
+            height: 18px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-switch.active::after {
+            left: 22px;
+        }
+
+        /* Select Dropdown */
+        .setting-select {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--card-border);
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 100px;
+        }
+
+        .setting-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        /* Dropdown options styling */
+        .setting-select option {
+            background-color: #2a2a2a;
+            color: #ffffff;
+            padding: 8px 12px;
+            font-weight: 500;
+        }
+
+        /* Hover state for options */
+        .setting-select option:hover {
+            background-color: var(--primary-color);
+        }
+
+        /* Selected option */
+        .setting-select option:checked {
+            background-color: var(--primary-color);
+            color: #ffffff;
+        }
+
+        /* For light themes - use light background with dark text */
+        body[data-theme="light"] .setting-select option,
+        body[data-theme="clean-white"] .setting-select option,
+        body[data-theme="cherry-blossom"] .setting-select option,
+        body[data-theme="pastel-dream"] .setting-select option,
+        body[data-theme="mint-fresh"] .setting-select option,
+        body[data-theme="coral-reef"] .setting-select option {
+            background-color: #f5f5f5;
+            color: #1a1a1a;
+        }
+
+        body[data-theme="light"] .setting-select option:checked,
+        body[data-theme="clean-white"] .setting-select option:checked,
+        body[data-theme="cherry-blossom"] .setting-select option:checked,
+        body[data-theme="pastel-dream"] .setting-select option:checked,
+        body[data-theme="mint-fresh"] .setting-select option:checked,
+        body[data-theme="coral-reef"] .setting-select option:checked {
+            background-color: var(--primary-color);
+            color: #ffffff;
+        }
+
+        /* Number Input with Stepper */
+        .number-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .number-input {
+            width: 60px;
+            padding: 6px 8px;
+            border-radius: 6px;
+            border: 1px solid var(--card-border);
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 11px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .number-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .stepper-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            border: 1px solid var(--card-border);
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stepper-btn:hover {
+            background: rgba(108, 99, 255, 0.1);
+            border-color: var(--primary-color);
+        }
+
+        /* Test Sound Button */
+        .test-sound-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--primary-color);
+            background: transparent;
+            color: var(--primary-color);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .test-sound-btn:hover {
+            background: rgba(108, 99, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .test-sound-btn:active {
+            transform: translateY(0);
+        }
+
+
+        /* Tooltip */
+        .tooltip-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: rgba(108, 99, 255, 0.2);
+            color: var(--primary-color);
+            font-size: 9px;
+            font-weight: bold;
+            cursor: help;
+            position: relative;
+        }
+
+        .tooltip-icon:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 6px 10px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            font-size: 10px;
+            font-weight: normal;
+            border-radius: 6px;
+            white-space: nowrap;
+            z-index: 1000;
+            margin-bottom: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .tooltip-icon:hover::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 4px solid transparent;
+            border-top-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+        }
+
+        /* Collapsible Section */
+        .collapsible-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            /* padding: 10px 0; */
+            transition: all 0.2s;
+        }
+
+        .collapsible-header:hover {
+            opacity: 0.8;
+        }
+
+        .collapsible-icon {
+            font-size: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .collapsible-icon.expanded {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .collapsible-content.expanded {
+            max-height: 500px;
+        }
+
+        /* Save Success Animation */
+        @keyframes saveSuccess {
+            0% {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .save-success {
+            animation: saveSuccess 0.4s ease-out;
+        }
+
+        /* Radio Button Group Enhanced */
+        .radio-button-group {
+            display: flex;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.1);
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .radio-button {
+            flex: 1;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            background: transparent;
+            color: var(--label-color);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .radio-button.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .radio-button:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* --- WEEKLY STATISTICS STYLES --- */
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: var(--card-bg);
+            border-radius: 10px;
+            border: 1px solid var(--card-border);
+        }
+
+        .stats-title {
+            margin: 0;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .week-selector {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .week-nav-btn {
+            background: rgba(108, 99, 255, 0.1);
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-size: 12px;
+        }
+
+        .week-nav-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        #current-week-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-color);
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 10px 12px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(108, 99, 255, 0.15);
+        }
+
+        .stat-icon {
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .stat-content {
+            flex: 1;
+        }
+
+        .stat-label {
+            font-size: 9px;
+            color: var(--label-color);
+            margin-bottom: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .stat-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 3px;
+        }
+
+        .stat-comparison {
+            font-size: 9px;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .comparison-arrow {
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .comparison-arrow.up {
+            color: #4cd964;
+        }
+
+        .comparison-arrow.down {
+            color: #ff3b30;
+        }
+
+        .comparison-text {
+            color: var(--label-color);
+        }
+
+        .stat-subtext {
+            font-size: 9px;
+            color: var(--label-color);
+        }
+
+        /* Progress Bars */
+        .progress-item {
+            margin-bottom: 20px;
+        }
+
+        .progress-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .progress-label {
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .progress-value {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), #8b7fff);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .progress-subtext {
+            font-size: 9px;
+            color: var(--label-color);
+        }
+
+        #error-view {
+            padding: 20px;
+            text-align: center;
+            color: var(--error-color);
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+        }
+
+        .productivity-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .metric-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .metric-value {
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .metric-label {
+            font-size: 8px;
+            color: var(--label-color);
+            text-align: center;
+        }
+
+        /* === THEME SELECTOR - NEW MODERN DESIGN === */
+        .theme-selector {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            max-height: 350px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .theme-category {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .theme-category-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-category-title::before {
+            content: '';
+            width: 3px;
+            height: 12px;
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .theme-option-wrapper {
+            position: relative;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .theme-option-wrapper:hover {
+            transform: translateY(-2px);
+        }
+
+        .theme-swatch {
+            height: 40px;
+            width: 100%;
+            border-radius: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.12);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .theme-swatch::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .theme-option-wrapper:hover .theme-swatch::before {
+            opacity: 1;
+        }
+
+        .theme-option-wrapper:hover .theme-swatch {
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .theme-option-wrapper.active .theme-swatch {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2),
+                0 4px 16px rgba(108, 99, 255, 0.3);
+        }
+
+        .theme-option-wrapper.active .theme-swatch::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            animation: checkmarkPop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes checkmarkPop {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .theme-label {
+            font-size: 8.5px;
+            color: var(--label-color);
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            opacity: 0.7;
+            text-align: center;
+        }
+
+        .theme-option-wrapper:hover .theme-label {
+            color: var(--text-color);
+        }
+
+        .theme-option-wrapper.active .theme-label {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* Scrollbar styling for theme selector */
+        .theme-selector::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .theme-selector::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        .theme-selector::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        .theme-selector::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+
+
+        .theme-dark {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        .theme-light {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .theme-purple {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .theme-true-black {
+            background: linear-gradient(135deg, #000000 0%, #111111 100%);
+        }
+
+        .theme-nord {
+            background: linear-gradient(135deg, #2E3440 0%, #434C5E 100%);
+        }
+
+        .theme-solarized {
+            background: linear-gradient(135deg, #002b36 0%, #073642 100%);
+        }
+
+        .theme-dracula {
+            background: linear-gradient(135deg, #282a36 0%, #44475a 100%);
+        }
+
+        .theme-monokai {
+            background: linear-gradient(135deg, #272822 0%, #3E3D32 100%);
+        }
+
+        .theme-gruvbox {
+            background: linear-gradient(135deg, #282828 0%, #3c3836 100%);
+        }
+
+        .theme-one-dark-pro {
+            background: linear-gradient(135deg, #282c34 0%, #21252b 100%);
+        }
+
+        .theme-catppuccin {
+            background: linear-gradient(135deg, #1e1e2e 0%, #181825 100%);
+        }
+
+        .theme-cyberpunk {
+            background: linear-gradient(135deg, #0c0029 0%, #3d0066 100%);
+        }
+
+        .theme-tokyo-night {
+            background: linear-gradient(135deg, #1a1b26 0%, #1f2335 100%);
+        }
+
+        .theme-material-ocean {
+            background: linear-gradient(135deg, #0F111A 0%, #1A1C25 100%);
+        }
+
+        .theme-everforest {
+            background: linear-gradient(135deg, #2b3339 0%, #374145 100%);
+        }
+
+        .theme-rose-pine {
+            background: linear-gradient(135deg, #191724 0%, #1f1d2e 100%);
+        }
+
+        .theme-ocean-breeze {
+            background: linear-gradient(135deg, #001f3f 0%, #0077be 50%, #00a8e8 100%);
+        }
+
+        .theme-sunset-glow {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ffa500 50%, #ffcb77 100%);
+        }
+
+        .theme-forest-green {
+            background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 50%, #52b788 100%);
+        }
+
+        .theme-cherry-blossom {
+            background: linear-gradient(135deg, #fff0f5 0%, #ffc0cb 50%, #ffb6c1 100%);
+        }
+
+        .theme-neon-cyber {
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #2d2d5f 100%);
+        }
+
+        .theme-pastel-dream {
+            background: linear-gradient(135deg, #f5f0ff 0%, #e6d9ff 50%, #d4c5f9 100%);
+        }
+
+        .theme-galaxy {
+            background: linear-gradient(135deg, #10002b 0%, #240046 30%, #3c096c 60%, #5a189a 100%);
+        }
+
+        .theme-mint-fresh {
+            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 50%, #9ae6b4 100%);
+        }
+
+        .theme-coral-reef {
+            background: linear-gradient(135deg, #1a2332 0%, #2a4858 50%, #3a6878 100%);
+        }
+
+        .theme-midnight-purple {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+        }
+
+        .theme-arctic-blue {
+            background: linear-gradient(135deg, #0c4a6e 0%, #075985 50%, #0369a1 100%);
+        }
+
+        .theme-autumn-leaves {
+            background: linear-gradient(135deg, #451a03 0%, #78350f 50%, #92400e 100%);
+        }
+
+        .theme-corporate-blue {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
+        }
+
+        .theme-executive-gray {
+            background: linear-gradient(135deg, #111827 0%, #1f2937 50%, #374151 100%);
+        }
+
+        .theme-professional-green {
+            background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%);
+        }
+
+        .theme-business-burgundy {
+            background: linear-gradient(135deg, #881337 0%, #9f1239 50%, #be123c 100%);
+        }
+
+        .theme-modern-slate {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+        }
+
+        .theme-clean-white {
+            background: linear-gradient(135deg, #f9fafb 0%, #ffffff 50%, #f3f4f6 100%);
+        }
+
+        .theme-charcoal {
+            background: linear-gradient(135deg, #09090b 0%, #18181b 50%, #27272a 100%);
+        }
+
+        .theme-navy-professional {
+            background: linear-gradient(135deg, #0c1844 0%, #172554 50%, #1e3a8a 100%);
+        }
+
+        .theme-warm-espresso {
+            background: linear-gradient(135deg, #451a03 0%, #78350f 50%, #92400e 100%);
+        }
+
+        .theme-cool-mint {
+            background: linear-gradient(135deg, #042f2e 0%, #134e4a 50%, #0f766e 100%);
+        }
+
+        .theme-soft-lavender {
+            background: linear-gradient(135deg, #4a148c 0%, #581c87 50%, #6b21a8 100%);
+        }
+
+        .theme-steel-blue {
+            background: linear-gradient(135deg, #0c4a6e 0%, #075985 50%, #0369a1 100%);
+        }
+
+
+        .goal-progress {
+            margin-top: 12px;
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .goal-bar {
+            height: 6px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .goal-fill {
+            height: 100%;
+            background: var(--primary-color);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .export-btn {
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid var(--primary-color);
+            background: transparent;
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .export-btn:hover {
+            background: rgba(108, 99, 255, 0.1);
+        }
+
+        .insight-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .insight-card {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .insight-value {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .insight-label {
+            font-size: 9px;
+            color: var(--label-color);
+        }
+
+        .divider {
+            border: none;
+            height: 1px;
+            background-color: var(--card-border);
+            margin: 15px 0;
+        }
+
+        .history-section {
+            margin-top: 15px;
+        }
+
+        #toggle-history-btn {
+            margin-bottom: 10px;
+        }
+
+        .history-content {
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-right: 5px;
+        }
+
+        .history-card-redesigned {
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            padding: 12px;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .history-card-redesigned h5 {
+            margin: 0 0 10px 0;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .history-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            text-align: center;
+        }
+
+        .history-stat .stat-value {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .history-stat .stat-label {
+            font-size: 8px;
+            color: var(--label-color);
+            text-transform: uppercase;
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes slideDown {
+            from {
+                transform: translateY(-10px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-10px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(10px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body class="dark-theme">
+    <div id="app-view">
+        <div class="header">
+            <div>
+                <h3>Keka Time Tracker</h3>
+                <div class="developer-credit">Developed by <a href="https://in.linkedin.com/in/sahil-kumar-sahoo/"
+                        target="_blank">Sahil Kumar Sahoo</a></div>
+            </div>
+            <a id="settings-btn" title="Settings">⚙️</a>
+        </div>
+        <div class="app-container">
+            <div class="sidebar">
+                <a class="nav-item active" data-view="dashboard"><span
+                        class="nav-icon">📊</span><span>Dashboard</span></a>
+                <a class="nav-item" data-view="breaks"><span class="nav-icon">☕</span><span>Breaks</span></a>
+                <a class="nav-item" data-view="analytics"><span class="nav-icon">📈</span><span>Analytics</span></a>
+                <a class="nav-item" data-view="insights"><span class="nav-icon">💡</span><span>Insights</span></a>
+                <a class="nav-item" data-view="achievements"><span
+                        class="nav-icon">🏆</span><span>Achievements</span></a>
+            </div>
+            <div class="main-content">
+                <div id="dashboard-view-content" class="view-content">
+                    <div class="dashboard-card">
+                        <div class="card-header">Time Mode</div>
+                        <div class="card-body day-mode-toggle">
+                            <div id="full-day-btn" class="toggle-btn active" data-mode="fullDay">Full Day</div>
+                            <div id="half-day-btn" class="toggle-btn" data-mode="halfDay">Half Day</div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="card-header">Today's Progress</div>
+                        <div class="card-body">
+                            <div class="progress-ring-container">
+                                <svg class="progress-ring" width="80" height="80">
+                                    <circle class="progress-ring-bg" cx="40" cy="40" r="36"></circle>
+                                    <circle id="progress-ring-fill" class="progress-ring-fill" cx="40" cy="40" r="36">
+                                    </circle>
+                                </svg>
+                                <div class="progress-text">
+                                    <div id="progress-percent" class="progress-percent">0%</div>
+                                    <div class="progress-label">Completed</div>
+                                </div>
+                            </div>
+                            <div class="status-overview">
+                                <div class="status-item">
+                                    <div class="status-label">Day Ends At</div>
+                                    <div id="day-end-at" class="status-large time-display">--:--</div>
+                                </div>
+                                <div class="status-item">
+                                    <div class="status-label">Status</div>
+                                    <div>
+                                        <span class="status-indicator pending"></span>
+                                        <span id="day-status" class="status-value status-pending">Pending</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="productivity-metrics">
+                                <div class="metric-item">
+                                    <div class="metric-value" id="focus-score">--</div>
+                                    <div class="metric-label">Focus</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-value" id="efficiency-score">--</div>
+                                    <div class="metric-label">Efficiency</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-value" id="consistency-score">--</div>
+                                    <div class="metric-label">Consistency</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="card-header">Work Time Details</div>
+                        <div class="card-body">
+                            <div class="time-cards">
+                                <div class="time-card">
+                                    <div class="time-label">Total In-Time</div>
+                                    <div id="total-in-time" class="time-value time-display">00:00:00</div>
+                                </div>
+                                <div class="time-card">
+                                    <div class="time-label" id="remaining-label">Remaining</div>
+                                    <div id="remaining-time" class="time-value time-display">00:00:00</div>
+                                </div>
+                            </div>
+                            <div class="goal-progress">
+                                <div class="goal-header">
+                                    <div id="weekly-goal-title" class="goal-title">Weekly Goal (40h)</div>
+                                    <div id="weekly-goal-percent">0%</div>
+                                </div>
+                                <div class="goal-bar">
+                                    <div id="weekly-goal-fill" class="goal-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card hidden" id="late-arrival-card">
+                        <div class="card-header">Late Arrivals (<span id="late-arrival-month"></span>)</div>
+                        <div class="card-body">
+                            <div class="status-item" style="background: none;">
+                                <div class="status-label">Late Count This Month</div>
+                                <div id="late-count" class="status-value status-pending" style="font-size: 24px;">0
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="breaks-view-content" class="view-content hidden">
+                    <div class="dashboard-card">
+                        <div class="card-header">Break Time Details</div>
+                        <div class="card-body">
+                            <div class="time-cards">
+                                <div class="time-card">
+                                    <div class="time-label">Total Used</div>
+                                    <div id="break-used" class="time-value time-display">0m : 0sec</div>
+                                </div>
+                                <div class="time-card">
+                                    <div class="time-label">Remaining</div>
+                                    <div id="break-remaining" class="time-value time-display">0m : 0sec</div>
+                                </div>
+                            </div>
+                            <div class="break-list" id="break-list"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="analytics-view-content" class="view-content hidden">
+                    <!-- Weekly Statistics Header -->
+                    <div class="stats-header">
+                        <h3 class="stats-title">📊 Weekly Statistics</h3>
+                        <div class="week-selector">
+                            <button class="week-nav-btn" id="prev-week">◀</button>
+                            <span id="current-week-label">This Week</span>
+                            <button class="week-nav-btn" id="next-week">▶</button>
+                        </div>
+                    </div>
+
+                    <!-- Main Stats Cards -->
+                    <div class="stats-grid">
+                        <!-- Total Hours Card -->
+                        <div class="stat-card">
+                            <div class="stat-icon">⏰</div>
+                            <div class="stat-content">
+                                <div class="stat-label">Total Hours</div>
+                                <div id="weekly-total-hours" class="stat-value">0:00</div>
+                                <div id="weekly-total-comparison" class="stat-comparison">
+                                    <span class="comparison-arrow">↑</span>
+                                    <span class="comparison-text">+0% vs last week</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Average Daily Hours Card -->
+                        <div class="stat-card">
+                            <div class="stat-icon">📈</div>
+                            <div class="stat-content">
+                                <div class="stat-label">Avg. Daily</div>
+                                <div id="weekly-avg-hours" class="stat-value">0:00</div>
+                                <div id="weekly-avg-comparison" class="stat-comparison">
+                                    <span class="comparison-arrow">↑</span>
+                                    <span class="comparison-text">+0% vs last week</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- On-Time Percentage Card -->
+                        <div class="stat-card">
+                            <div class="stat-icon">✅</div>
+                            <div class="stat-content">
+                                <div class="stat-label">On-Time Rate</div>
+                                <div id="weekly-ontime-percent" class="stat-value">100%</div>
+                                <div class="stat-subtext">
+                                    <span id="ontime-count">0</span>/<span id="total-days-count">0</span> days
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Late Count Card -->
+                        <div class="stat-card">
+                            <div class="stat-icon">⏱️</div>
+                            <div class="stat-content">
+                                <div class="stat-label">Late Arrivals</div>
+                                <div id="weekly-late-count" class="stat-value status-pending">0</div>
+                                <div class="stat-subtext">This week</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bars Section -->
+                    <div class="dashboard-card">
+                        <div class="card-header">Weekly Progress</div>
+                        <div class="card-body">
+                            <!-- Daily Goal Progress -->
+                            <div class="progress-item">
+                                <div class="progress-header">
+                                    <span class="progress-label">Daily Goal Achievement</span>
+                                    <span id="goal-achievement-percent" class="progress-value">0%</span>
+                                </div>
+                                <div class="progress-bar-container">
+                                    <div id="goal-achievement-bar" class="progress-bar-fill" style="width: 0%"></div>
+                                </div>
+                                <div class="progress-subtext">
+                                    <span id="goals-met">0</span> of <span id="total-work-days">5</span> days met
+                                </div>
+                            </div>
+
+                            <!-- Weekly Hours Progress -->
+                            <div class="progress-item">
+                                <div class="progress-header">
+                                    <span class="progress-label">Weekly Hours Target</span>
+                                    <span id="weekly-target-percent" class="progress-value">0%</span>
+                                </div>
+                                <div class="progress-bar-container">
+                                    <div id="weekly-target-bar" class="progress-bar-fill" style="width: 0%"></div>
+                                </div>
+                                <div class="progress-subtext">
+                                    <span id="current-weekly-hours">0</span> / <span id="target-weekly-hours">40</span>
+                                    hours
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Daily Breakdown -->
+                    <div class="dashboard-card">
+                        <div class="card-header">Daily Breakdown</div>
+                        <div class="card-body">
+                            <div id="weekly-day-list" class="weekly-day-list"></div>
+                        </div>
+                    </div>
+
+                    <!-- Export Buttons -->
+                    <div class="dashboard-card">
+                        <div class="card-body" style="padding: 12px;">
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                <button class="export-btn" id="export-weekly-data"
+                                    style="flex: 1; min-width: 120px;"><span>📊</span>
+                                    Export CSV</button>
+                                <button class="export-btn" id="export-json-data"
+                                    style="flex: 1; min-width: 120px;"><span>📄</span> Export
+                                    JSON</button>
+                                <button class="export-btn" id="export-excel-data"
+                                    style="flex: 1; min-width: 120px; background: linear-gradient(135deg, #34C759 0%, #30D158 100%);"><span>📥</span>
+                                    Export Excel</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MISSED SWIPES SECTION -->
+                    <div class="dashboard-card">
+                        <div class="card-header"
+                            style="display: flex; justify-content: space-between; align-items: center;">
+                            <span>⚠️ Missed Swipes</span>
+                            <span id="missed-swipes-count"
+                                style="background: var(--error-color); color: white; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 600;">0</span>
+                        </div>
+                        <div class="card-body">
+                            <div id="missed-swipes-list"></div>
+                        </div>
+                    </div>
+
+                    <!-- INCOMPLETE HOURS SECTION -->
+                    <div class="dashboard-card">
+                        <div class="card-header"
+                            style="display: flex; justify-content: space-between; align-items: center;">
+                            <span>⏰ Incomplete Hours (&lt;8hr)</span>
+                            <span id="incomplete-hours-count"
+                                style="background: var(--warning-color); color: white; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 600;">0</span>
+                        </div>
+                        <div class="card-body">
+                            <div id="incomplete-hours-list"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="insights-view-content" class="view-content hidden">
+                    <div class="dashboard-card">
+                        <div class="card-header">This Week's Productivity Insights</div>
+                        <div class="card-body">
+                            <div class="insight-grid">
+                                <div class="insight-card">
+                                    <div id="avg-daily-hours" class="insight-value">--:--</div>
+                                    <div class="insight-label">Avg Daily Hours</div>
+                                </div>
+                                <div class="insight-card">
+                                    <div id="best-productivity-day" class="insight-value">--</div>
+                                    <div class="insight-label">Most Productive Day</div>
+                                </div>
+                                <div class="insight-card">
+                                    <div id="total-overtime" class="insight-value">--:--</div>
+                                    <div class="insight-label">Total Overtime</div>
+                                </div>
+                                <div class="insight-card">
+                                    <div id="break-efficiency" class="insight-value">--%</div>
+                                    <div class="insight-label">Break Efficiency</div>
+                                </div>
+                            </div>
+                            <hr class="divider">
+                            <div class="history-section">
+                                <button id="toggle-history-btn" class="secondary-btn">Show Weekly History</button>
+                                <div id="history-insights-view" class="hidden">
+                                    <div id="history-insights-content" class="history-content">
+                                        <!-- Historical data will be dynamically injected here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="achievements-view-content" class="view-content hidden">
+                    <div class="dashboard-card">
+                        <div class="card-header">Work Streak</div>
+                        <div class="card-body">
+                            <div class="status-item" style="background: none; margin-bottom: 12px;">
+                                <div class="status-label">Current Streak</div>
+                                <div id="work-streak" class="status-value" style="font-size: 24px;">--</div>
+                                <div style="font-size: 9px; color: var(--label-color); margin-top: 4px;">Consecutive
+                                    working days</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="card-header">Achievements & Milestones</div>
+                        <div class="card-body">
+                            <div id="achievements-list" style="display: flex; flex-direction: column; gap: 8px;">
+                                <!-- Achievements will be dynamically injected here -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="card-header">Current Month Summary</div>
+                        <div class="card-body">
+                            <div class="analytics-summary">
+                                <div class="status-item">
+                                    <div class="status-label">Total Hours</div>
+                                    <div id="current-month-total-hours" class="status-value">--:--:--</div>
+                                </div>
+                                <div class="status-item">
+                                    <div class="status-label">Work Days</div>
+                                    <div id="current-month-work-days" class="status-value">--</div>
+                                </div>
+                            </div>
+                            <div class="status-item" style="margin-top: 12px;">
+                                <div class="status-label">Avg Daily Hours</div>
+                                <div id="current-month-avg-hours" class="status-value">--:--:--</div>
+                            </div>
+                            <div class="status-item" style="margin-top: 12px;">
+                                <div class="status-label">Late Count</div>
+                                <div id="current-month-late-count" class="status-value">--</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="card-header">Previous Month Summary</div>
+                        <div class="card-body">
+                            <div class="analytics-summary">
+                                <div class="status-item">
+                                    <div class="status-label">Total Hours</div>
+                                    <div id="previous-month-total-hours" class="status-value">--:--:--</div>
+                                </div>
+                                <div class="status-item">
+                                    <div class="status-label">Work Days</div>
+                                    <div id="previous-month-work-days" class="status-value">--</div>
+                                </div>
+                            </div>
+                            <div class="status-item" style="margin-top: 12px;">
+                                <div class="status-label">Avg Daily Hours</div>
+                                <div id="previous-month-avg-hours" class="status-value">--:--:--</div>
+                            </div>
+                            <div class="status-item" style="margin-top: 12px;">
+                                <div class="status-label">Late Count</div>
+                                <div id="previous-month-late-count" class="status-value">--</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="card-header">Week Comparison</div>
+                        <div class="card-body">
+                            <div id="week-comparison-content">
+                                <!-- Comparison data will be injected here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="settings-view" class="hidden">
+        <div class="header">
+            <a id="back-btn" title="Back">⬅️</a>
+            <h3>Settings</h3>
+            <button id="save-settings-btn" class="header-save-btn">💾 Save</button>
+        </div>
+        <div id="settings-status" class="settings-status-banner"></div>
+        <div class="settings-form">
+            <!-- APPEARANCE SECTION -->
+            <div class="settings-section">
+                <div class="settings-section-header collapsible-header collapsed" id="appearance-header">
+                    <span class="settings-section-icon">🎨</span>
+                    <span class="settings-section-title">Appearance</span>
+                    <span class="dropdown-arrow">▼</span>
+                </div>
+                <div class="collapsible-content collapsed" id="appearance-content">
+                    <div class="form-group">
+                        <label>Theme</label>
+                        <div class="theme-selector">
+                            <div class="theme-option-wrapper active" data-theme="dark">
+                                <div class="theme-swatch theme-dark"></div><span class="theme-label">Default</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="light">
+                                <div class="theme-swatch theme-light"></div><span class="theme-label">Light</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="purple">
+                                <div class="theme-swatch theme-purple"></div><span class="theme-label">Purple</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="true-black">
+                                <div class="theme-swatch theme-true-black"></div><span class="theme-label">OLED</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="nord">
+                                <div class="theme-swatch theme-nord"></div><span class="theme-label">Nord</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="solarized">
+                                <div class="theme-swatch theme-solarized"></div><span
+                                    class="theme-label">Solarized</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="dracula">
+                                <div class="theme-swatch theme-dracula"></div><span class="theme-label">Dracula</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="monokai">
+                                <div class="theme-swatch theme-monokai"></div><span class="theme-label">Monokai</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="gruvbox">
+                                <div class="theme-swatch theme-gruvbox"></div><span class="theme-label">Gruvbox</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="one-dark-pro">
+                                <div class="theme-swatch theme-one-dark-pro"></div><span class="theme-label">One
+                                    Dark</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="catppuccin">
+                                <div class="theme-swatch theme-catppuccin"></div><span
+                                    class="theme-label">Catppuccin</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="cyberpunk">
+                                <div class="theme-swatch theme-cyberpunk"></div><span
+                                    class="theme-label">Cyberpunk</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="tokyo-night">
+                                <div class="theme-swatch theme-tokyo-night"></div><span class="theme-label">Tokyo
+                                    Night</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="material-ocean">
+                                <div class="theme-swatch theme-material-ocean"></div><span
+                                    class="theme-label">Ocean</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="everforest">
+                                <div class="theme-swatch theme-everforest"></div><span
+                                    class="theme-label">Everforest</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="rose-pine">
+                                <div class="theme-swatch theme-rose-pine"></div><span class="theme-label">Rosé
+                                    Pine</span>
+                            </div>
+                            <!-- New Attractive Themes -->
+                            <div class="theme-option-wrapper" data-theme="ocean-breeze">
+                                <div class="theme-swatch theme-ocean-breeze"></div><span class="theme-label">Ocean
+                                    Breeze</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="sunset-glow">
+                                <div class="theme-swatch theme-sunset-glow"></div><span class="theme-label">Sunset
+                                    Glow</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="forest-green">
+                                <div class="theme-swatch theme-forest-green"></div><span class="theme-label">Forest
+                                    Green</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="cherry-blossom">
+                                <div class="theme-swatch theme-cherry-blossom"></div><span class="theme-label">Cherry
+                                    Blossom</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="neon-cyber">
+                                <div class="theme-swatch theme-neon-cyber"></div><span class="theme-label">Neon
+                                    Cyber</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="pastel-dream">
+                                <div class="theme-swatch theme-pastel-dream"></div><span class="theme-label">Pastel
+                                    Dream</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="galaxy">
+                                <div class="theme-swatch theme-galaxy"></div><span class="theme-label">Galaxy</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="mint-fresh">
+                                <div class="theme-swatch theme-mint-fresh"></div><span class="theme-label">Mint
+                                    Fresh</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="coral-reef">
+                                <div class="theme-swatch theme-coral-reef"></div><span class="theme-label">Coral
+                                    Reef</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="midnight-purple">
+                                <div class="theme-swatch theme-midnight-purple"></div><span class="theme-label">Midnight
+                                    Purple</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="arctic-blue">
+                                <div class="theme-swatch theme-arctic-blue"></div><span class="theme-label">Arctic
+                                    Blue</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="autumn-leaves">
+                                <div class="theme-swatch theme-autumn-leaves"></div><span class="theme-label">Autumn
+                                    Leaves</span>
+                            </div>
+                            <!-- Professional Work Themes -->
+                            <div class="theme-option-wrapper" data-theme="corporate-blue">
+                                <div class="theme-swatch theme-corporate-blue"></div><span class="theme-label">Corporate
+                                    Blue</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="executive-gray">
+                                <div class="theme-swatch theme-executive-gray"></div><span class="theme-label">Executive
+                                    Gray</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="professional-green">
+                                <div class="theme-swatch theme-professional-green"></div><span
+                                    class="theme-label">Professional
+                                    Green</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="business-burgundy">
+                                <div class="theme-swatch theme-business-burgundy"></div><span
+                                    class="theme-label">Business
+                                    Burgundy</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="modern-slate">
+                                <div class="theme-swatch theme-modern-slate"></div><span class="theme-label">Modern
+                                    Slate</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="clean-white">
+                                <div class="theme-swatch theme-clean-white"></div><span class="theme-label">Clean
+                                    White</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="charcoal">
+                                <div class="theme-swatch theme-charcoal"></div><span class="theme-label">Charcoal</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="navy-professional">
+                                <div class="theme-swatch theme-navy-professional"></div><span class="theme-label">Navy
+                                    Professional</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="warm-espresso">
+                                <div class="theme-swatch theme-warm-espresso"></div><span class="theme-label">Warm
+                                    Espresso</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="cool-mint">
+                                <div class="theme-swatch theme-cool-mint"></div><span class="theme-label">Cool
+                                    Mint</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="soft-lavender">
+                                <div class="theme-swatch theme-soft-lavender"></div><span class="theme-label">Soft
+                                    Lavender</span>
+                            </div>
+                            <div class="theme-option-wrapper" data-theme="steel-blue">
+                                <div class="theme-swatch theme-steel-blue"></div><span class="theme-label">Steel
+                                    Blue</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WORK HOURS CONFIGURATION SECTION -->
+            <div class="settings-section">
+                <div class="settings-section-header">
+                    <span class="settings-section-icon">⏰</span>
+                    <span class="settings-section-title">Work Hours Configuration</span>
+                </div>
+                <div class="form-group">
+                    <label>Full Day Hours</label>
+                    <div class="time-input-container">
+                        <input type="text" class="time-input" value="08" maxlength="2" id="full-day-hh">
+                        <span class="time-separator">:</span>
+                        <input type="text" class="time-input" value="00" maxlength="2" id="full-day-mm">
+                    </div>
+                    <p class="input-description">Set the time for a full working day (HH:MM)</p>
+                </div>
+                <div class="form-group">
+                    <label>Half Day Hours</label>
+                    <div class="time-input-container">
+                        <input type="text" class="time-input" value="04" maxlength="2" id="half-day-hh">
+                        <span class="time-separator">:</span>
+                        <input type="text" class="time-input" value="30" maxlength="2" id="half-day-mm">
+                    </div>
+                    <p class="input-description">Set the time for a half working day (HH:MM)</p>
+                </div>
+                <div class="form-group">
+                    <label>Break Hours</label>
+                    <div class="time-input-container">
+                        <input type="text" class="time-input" placeholder="HH" maxlength="2" id="break-hh">
+                        <span class="time-separator">:</span>
+                        <input type="text" class="time-input" placeholder="MM" maxlength="2" id="break-mm">
+                    </div>
+                    <p class="input-description">Set the total break time allowed (HH:MM)</p>
+                </div>
+            </div>
+
+            <!-- SHIFT SETTINGS SECTION -->
+            <div class="settings-section">
+                <div class="settings-section-header">
+                    <span class="settings-section-icon">🕐</span>
+                    <span class="settings-section-title">Shift Settings</span>
+                </div>
+                <div class="form-group">
+                    <label>Shift Start Time</label>
+                    <div class="time-input-container">
+                        <input type="text" class="time-input" placeholder="HH" maxlength="2" id="start-time-hh">
+                        <span class="time-separator">:</span>
+                        <input type="text" class="time-input" placeholder="MM" maxlength="2" id="start-time-mm">
+                    </div>
+                    <p class="input-description">Set the official start time of your shift (HH:MM)</p>
+                </div>
+                <div class="settings-row">
+                    <div class="setting-info">
+                        <div class="setting-label">
+                            Late Grace Period
+                            <span class="tooltip-icon"
+                                data-tooltip="Minutes after shift start before marked as late">?</span>
+                        </div>
+                        <div class="setting-description">Buffer time before being marked late</div>
+                    </div>
+                    <div class="setting-control">
+                        <div class="number-input-wrapper">
+                            <button class="stepper-btn" id="grace-decrease">−</button>
+                            <input type="number" class="number-input" id="late-grace-period" min="0" max="60" value="5">
+                            <button class="stepper-btn" id="grace-increase">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Time Format</label>
+                    <div class="radio-button-group">
+                        <button class="radio-button" data-format="24H">24-Hour</button>
+                        <button class="radio-button active" data-format="12H">12-Hour</button>
+                    </div>
+                    <input type="radio" name="time-format" value="24H" style="display: none;">
+                    <input type="radio" name="time-format" value="12H" checked style="display: none;">
+                </div>
+            </div>
+
+            <!-- NOTIFICATIONS & ALERTS SECTION -->
+            <div class="settings-section">
+                <div class="settings-section-header">
+                    <span class="settings-section-icon">🔔</span>
+                    <span class="settings-section-title">Notifications & Alerts</span>
+                </div>
+                <div class="settings-row">
+                    <div class="setting-info">
+                        <div class="setting-label">Completion Notification</div>
+                        <div class="setting-description">Get notified when daily work hours are complete</div>
+                    </div>
+                    <div class="setting-control" style="display: flex; gap: 10px; align-items: center;">
+                        <div class="toggle-switch active" id="completion-notification-toggle"></div>
+                        <input type="checkbox" id="completion-notification" checked style="display: none;">
+                        <button class="test-sound-btn" id="test-notification-btn" title="Test completion notification">
+                            🔔 Test
+                        </button>
+                    </div>
+                </div>
+                <div class="settings-row">
+                    <div class="setting-info">
+                        <div class="setting-label">
+                            Sound Notifications
+                            <span class="tooltip-icon" data-tooltip="Play sound when receiving notifications">?</span>
+                        </div>
+                        <div class="setting-description">Enable audio alerts for notifications</div>
+                    </div>
+                    <div class="setting-control">
+                        <div class="toggle-switch" id="sound-notification-toggle"></div>
+                        <input type="checkbox" id="sound-notification" style="display: none;">
+                    </div>
+                </div>
+                <div class="settings-row">
+                    <div class="setting-info">
+                        <div class="setting-label">Notification Sound</div>
+                        <div class="setting-description">Choose your preferred notification sound</div>
+                    </div>
+                    <div class="setting-control">
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <select class="setting-select" id="notification-sound" style="flex: 1;">
+                                <option value="bell">🔔 Bell</option>
+                                <option value="chime">🎵 Chime</option>
+                                <option value="ding">🔊 Ding</option>
+                                <option value="success">✨ Success</option>
+                                <option value="alert">⚠️ Alert</option>
+                                <option value="gentle">🎐 Gentle</option>
+                                <option value="digital">💻 Digital</option>
+                                <option value="marimba">🎹 Marimba</option>
+                                <option value="harp">🎻 Harp</option>
+                                <option value="xylophone">🎼 Xylophone</option>
+                                <option value="piano">🎹 Piano</option>
+                                <option value="glass">🥂 Glass</option>
+                                <option value="coin">🪙 Coin</option>
+                                <option value="swoosh">💨 Swoosh</option>
+                                <option value="pop">🎈 Pop</option>
+                                <option value="beep">📟 Beep</option>
+                                <option value="whatsapp">💬 WhatsApp</option>
+                                <option value="iphone">📱 iPhone Tri-tone</option>
+                                <option value="samsung">📲 Samsung Whistle</option>
+                                <option value="messenger">💙 Messenger Pop</option>
+                                <option value="slack">💼 Slack Knock</option>
+                                <option value="discord">🎮 Discord</option>
+                                <option value="teams">👔 Teams</option>
+                                <option value="tweet">🐦 Tweet</option>
+                                <optgroup label="🎶 Musical Tunes">
+                                    <option value="happyBirthday">🎂 Happy Birthday</option>
+                                    <option value="jingleBells">🔔 Jingle Bells</option>
+                                    <option value="twinkleStar">⭐ Twinkle Twinkle</option>
+                                    <option value="nokiaTune">📱 Nokia Tune</option>
+                                    <option value="superMario">🍄 Super Mario</option>
+                                    <option value="zelda">🗡️ Zelda</option>
+                                    <option value="tetris">🎮 Tetris</option>
+                                    <option value="finalFantasy">⚔️ Final Fantasy</option>
+                                </optgroup>
+                                <option value="silent">🔇 Silent</option>
+                            </select>
+                            <button class="test-sound-btn" id="test-sound-btn" title="Test notification sound">
+                                🔊 Test
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="settings-row">
+                    <div class="setting-info">
+                        <div class="setting-label">
+                            Overtime Alert
+                            <span class="tooltip-icon" data-tooltip="Alert when exceeding daily work hours">?</span>
+                        </div>
+                        <div class="setting-description">Hours after which to show overtime alert</div>
+                    </div>
+                    <div class="setting-control">
+                        <div class="number-input-wrapper">
+                            <button class="stepper-btn" id="overtime-decrease">−</button>
+                            <input type="number" class="number-input" id="overtime-threshold" min="0" max="16"
+                                value="9">
+                            <button class="stepper-btn" id="overtime-increase">+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ADVANCED SETTINGS SECTION -->
+            <div class="settings-section">
+                <div class="settings-section-header">
+                    <span class="settings-section-icon">⚙️</span>
+                    <span class="settings-section-title">Advanced Settings</span>
+                </div>
+                <div class="settings-row">
+                    <div class="setting-info">
+                        <div class="setting-label">
+                            Auto-Refresh Data
+                            <span class="tooltip-icon" data-tooltip="Automatically refresh data from Keka">?</span>
+                        </div>
+                        <div class="setting-description">Refresh interval for automatic data updates</div>
+                    </div>
+                    <div class="setting-control">
+                        <select class="setting-select" id="auto-refresh">
+                            <option value="0">Off</option>
+                            <option value="1">Auto Refresh (1 min)</option>
+                            <option value="5">5 minutes</option>
+                            <option value="10">10 minutes</option>
+                            <option value="15">15 minutes</option>
+                            <option value="30">30 minutes</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="settings-row">
+                    <div class="setting-info">
+                        <div class="setting-label">Work Week</div>
+                        <div class="setting-description">Number of working days per week</div>
+                    </div>
+                    <div class="setting-control">
+                        <select class="setting-select" id="work-week-days">
+                            <option value="5">5 Days</option>
+                            <option value="6">6 Days</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="settings-row">
+                    <div class="setting-info">
+                        <div class="setting-label">Show Badge Icon</div>
+                        <div class="setting-description">Display remaining time on extension icon</div>
+                    </div>
+                    <div class="setting-control">
+                        <div class="toggle-switch active" id="badge-icon-toggle"></div>
+                        <input type="checkbox" id="badge-icon" checked style="display: none;">
+                    </div>
+                </div>
+                <div class="settings-row">
+                    <div class="setting-info">
+                        <div class="setting-label">
+                            Data Auto-Backup
+                            <span class="tooltip-icon" data-tooltip="Automatically export data weekly">?</span>
+                        </div>
+                        <div class="setting-description">Weekly automatic data export to downloads</div>
+                    </div>
+                    <div class="setting-control">
+                        <div class="toggle-switch" id="auto-backup-toggle"></div>
+                        <input type="checkbox" id="auto-backup" style="display: none;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACCOUNT MANAGEMENT SECTION -->
+            <div class="settings-section">
+                <div class="settings-section-header">
+                    <span class="settings-section-icon">👤</span>
+                    <span class="settings-section-title">Account Management</span>
+                </div>
+                <div class="form-group">
+                    <label>Reset Late Count for <strong id="reset-month-label"></strong></label>
+                    <button id="reset-late-count-btn">Reset Count to 0</button>
+                    <div id="reset-status"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="error-view" class="hidden">
+        <div class="header">
+            <h3>Keka Time Tracker</h3>
+        </div>
+        <div id="error-message" style="padding: 20px; text-align: center;"></div>
+    </div>
+    <!-- Feature Module Scripts -->
+    <script src="chart.min.js"></script>
+    <script src="charts.js"></script>
+    <script src="pomodoro.js"></script>
+    <script src="goals.js"></script>
+    <script src="achievements.js"></script>
+    <!-- Main Scripts -->
+    <script src="popup.js"></script>
+    <script src="disable-right-click.js"></script>
+    <!-- Collapsible Settings Script -->
+    <script src="collapsible.js"></script>
+</body>
+
+</html>
