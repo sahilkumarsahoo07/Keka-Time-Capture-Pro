@@ -1,8 +1,9 @@
 # ⏰ Keka Time Capture Pro
 
-> A powerful Chrome extension that enhances Keka's attendance tracking with advanced analytics, missed swipe detection, and comprehensive Excel exports.
+> A powerful browser extension that enhances Keka's attendance tracking with advanced analytics, missed swipe detection, and comprehensive Excel exports.
 
-[![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-blue?logo=google-chrome)](https://chrome.google.com/webstore)
+[![Edge Add-ons](https://img.shields.io/badge/Edge-Available-0078D4?logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/keka-time-capture-pro/nafcioiaipfahhkpgmgbjpildbkabonn)
+[![Chrome Extension](https://img.shields.io/badge/Chrome-Coming%20Soon-lightgrey?logo=google-chrome)](#)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-1.0.0-green.svg)](manifest.json)
 
@@ -78,13 +79,19 @@ Export detailed attendance reports including:
 
 ## 🚀 Installation
 
-### Method 1: Chrome Web Store (Recommended)
-1. Visit the [Chrome Web Store](#) (link pending)
+### Method 1: Edge Add-ons Store (Recommended) ⭐
+1. Visit the [Edge Add-ons Store](https://microsoftedge.microsoft.com/addons/detail/keka-time-capture-pro/nafcioiaipfahhkpgmgbjpildbkabonn)
+2. Click **Get**
+3. Navigate to your Keka attendance page
+4. Click the extension icon to start tracking
+
+### Method 2: Chrome Web Store
+1. Visit the Chrome Web Store (Coming Soon - Under Review)
 2. Click **Add to Chrome**
 3. Navigate to your Keka attendance page
 4. Click the extension icon to start tracking
 
-### Method 2: Manual Installation (Developer Mode)
+### Method 3: Manual Installation (Developer Mode)
 1. **Download the Extension**
    ```bash
    git clone https://github.com/sahilkumarsahoo07/Keka-Time-Capture-Pro.git
@@ -422,6 +429,7 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 
 ## 📞 Support
 
+- **Edge Add-ons**: [Leave a Review](https://microsoftedge.microsoft.com/addons/detail/keka-time-capture-pro/nafcioiaipfahhkpgmgbjpildbkabonn)
 - **Issues**: [GitHub Issues](https://github.com/sahilkumarsahoo07/Keka-Time-Capture-Pro/issues)
 - **Email**: sahilkumarsahoo07@example.com
 - **Documentation**: [Wiki](https://github.com/sahilkumarsahoo07/Keka-Time-Capture-Pro/wiki)
@@ -465,6 +473,6 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 
 ⭐ Star this repo if you find it helpful!
 
-[Report Bug](https://github.com/sahilkumarsahoo07/Keka-Time-Capture-Pro/issues) · [Request Feature](https://github.com/sahilkumarsahoo07/Keka-Time-Capture-Pro/issues) · [Documentation](https://github.com/sahilkumarsahoo07/Keka-Time-Capture-Pro/wiki)
+[🔗 Get Extension](https://microsoftedge.microsoft.com/addons/detail/keka-time-capture-pro/nafcioiaipfahhkpgmgbjpildbkabonn) · [Report Bug](https://github.com/sahilkumarsahoo07/Keka-Time-Capture-Pro/issues) · [Request Feature](https://github.com/sahilkumarsahoo07/Keka-Time-Capture-Pro/issues) · [Documentation](https://github.com/sahilkumarsahoo07/Keka-Time-Capture-Pro/wiki)
 
 </div>
