@@ -73,22 +73,33 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             });
 
             const tenMinutesBeforeEnd = endTime - (10 * 60 * 1000);
+            const fiveMinutesBeforeEnd = endTime - (5 * 60 * 1000);
+
+            // Create 10-minute warning
             if (tenMinutesBeforeEnd > now) {
                 try {
-                    chrome.alarms.create("startRepeatingWarning", {
+                    chrome.alarms.create("warning_10min", {
                         when: tenMinutesBeforeEnd,
                     });
-                } catch (error) {
-                }
+                } catch (error) { }
             }
 
+            // Create 5-minute warning
+            if (fiveMinutesBeforeEnd > now) {
+                try {
+                    chrome.alarms.create("warning_5min", {
+                        when: fiveMinutesBeforeEnd,
+                    });
+                } catch (error) { }
+            }
+
+            // Create final completion alarm
             if (endTime > now) {
                 try {
                     chrome.alarms.create("finalCompletion", {
                         when: endTime,
                     });
-                } catch (error) {
-                }
+                } catch (error) { }
             }
 
             if (sendResponse) sendResponse({ success: true });
@@ -114,20 +125,16 @@ chrome.alarms.onAlarm.addListener((alarm) => {
             return;
         }
 
-        if (alarm.name === "startRepeatingWarning") {
-            showPreCompletionNotification();
-            chrome.alarms.create("repeatingWarning", {
-                delayInMinutes: 1.5,
-                periodInMinutes: 1.5
-            }, () => {
-            });
+        if (alarm.name === "warning_10min") {
+            showPreCompletionNotification(10);
         }
-        else if (alarm.name === "repeatingWarning") {
-            showPreCompletionNotification();
+        else if (alarm.name === "warning_5min") {
+            showPreCompletionNotification(5);
         }
         else if (alarm.name === "finalCompletion") {
-            chrome.alarms.clearAll((wasCleared) => {
-            });
+            // Clear other specific alarms just in case
+            chrome.alarms.clear("warning_10min");
+            chrome.alarms.clear("warning_5min");
             showFinalCompletionNotification();
         }
     } catch (error) {
@@ -329,7 +336,7 @@ function scheduleWeeklySummary() {
     }
 }
 
-function showPreCompletionNotification() {
+function showPreCompletionNotification(minutesLeft) {
     try {
         // Respect user preference stored in sync storage
         chrome.storage.sync.get({
@@ -350,7 +357,7 @@ function showPreCompletionNotification() {
                 type: "basic",
                 iconUrl: "icons/icon.png",
                 title: "Shift Ending Soon",
-                message: "Your shift is about to end. Remember to clock out soon.",
+                message: `Your shift ends in ${minutesLeft} minutes.`,
                 priority: 2,
                 silent: true
             }, (notificationId) => {

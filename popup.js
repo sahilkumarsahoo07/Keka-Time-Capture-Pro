@@ -292,6 +292,7 @@ let timerInterval = null;
 let currentDayMode = 'fullDay'; // 'fullDay' or 'halfDay'
 let isViewingLastWeek = false; // true = viewing last week, false = viewing this week
 let autoRefreshInterval = null; // Auto-refresh interval ID
+let lastSentEndTime = 0; // Track last sent alarm time to avoid spam
 
 // --- AUTO-REFRESH FUNCTION ---
 function setupAutoRefresh() {
@@ -851,7 +852,12 @@ function updateDisplay() {
 
         // Don't schedule alarms when viewing historical month
         if (!isHistoricalMonth && remainingWorkMillis > 0 && dayEndAt && appData.isCurrentlyWorking) {
-            chrome.runtime.sendMessage({ type: 'SET_END_OF_DAY_ALARM', endTime: dayEndAt.getTime() });
+            // DEBOUNCE: Only send if endTime has changed significantly (e.g. > 2s)
+            const newEndTime = dayEndAt.getTime();
+            if (Math.abs(newEndTime - lastSentEndTime) > 2000) {
+                chrome.runtime.sendMessage({ type: 'SET_END_OF_DAY_ALARM', endTime: newEndTime });
+                lastSentEndTime = newEndTime;
+            }
         }
 
         // Check and trigger notifications (completion and overtime)
