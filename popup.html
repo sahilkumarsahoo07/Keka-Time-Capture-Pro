@@ -2425,24 +2425,50 @@
 
         .export-btn {
             width: 100%;
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px solid var(--primary-color);
-            background: transparent;
-            color: var(--primary-color);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+            background: var(--card-bg);
+            color: var(--text-color);
             font-weight: 600;
             font-size: 11px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             margin-top: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .export-btn:hover {
-            background: rgba(108, 99, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border-color: var(--primary-color);
+        }
+
+        .export-btn.btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            border: none;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .export-btn.btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .export-btn.btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .export-btn.btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
         }
 
         .insight-grid {
@@ -2822,16 +2848,16 @@
                     <!-- Export Buttons -->
                     <div class="dashboard-card">
                         <div class="card-body" style="padding: 12px;">
-                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                                <button class="export-btn" id="export-weekly-data"
-                                    style="flex: 1; min-width: 120px;"><span>📊</span>
-                                    Export CSV</button>
-                                <button class="export-btn" id="export-json-data"
-                                    style="flex: 1; min-width: 120px;"><span>📄</span> Export
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <button class="export-btn btn-secondary" id="export-weekly-data"
+                                    style="flex: 1; min-width: 110px;"><span>📊</span>
+                                    CSV</button>
+                                <button class="export-btn btn-secondary" id="export-json-data"
+                                    style="flex: 1; min-width: 110px;"><span>📄</span>
                                     JSON</button>
-                                <button class="export-btn" id="export-excel-data"
-                                    style="flex: 1; min-width: 120px; background: linear-gradient(135deg, #34C759 0%, #30D158 100%);"><span>📥</span>
-                                    Export Excel</button>
+                                <button class="export-btn btn-primary" id="export-excel-data"
+                                    style="flex: 1; min-width: 100%; order: 3;"><span>📥</span>
+                                    Export to Excel</button>
                             </div>
                         </div>
                     </div>

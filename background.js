@@ -112,6 +112,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         else if (request.type === "DATA_UPDATE") {
             // CACHE: Save the latest data to local storage so popup can load it instantly
             chrome.storage.local.set({ 'latestAppData': request });
+            if (sendResponse) sendResponse({ success: true });
         } else {
             if (sendResponse) sendResponse({ success: false, error: "Unknown request type" });
         }
@@ -297,8 +298,17 @@ function checkOvertime() {
                 current += (Date.now() - state.lastPunchTime);
             }
 
+
             const currentHours = current / (1000 * 60 * 60);
             const thresholdHours = settings.overtimeThreshold;
+
+            // SAFEGUARD: If calculated hours are unreasonably high (e.g. > 18h), 
+            // or if the last punch was not today, ignore it.
+            // This prevents "next morning" alerts if the browser was left open or closed without clocking out.
+            const isPunchToday = new Date(state.lastPunchTime).getDate() === new Date().getDate();
+            if (currentHours > 18 || !isPunchToday) {
+                return;
+            }
 
             // Check if current hours exceed the threshold
             if (currentHours >= thresholdHours) {

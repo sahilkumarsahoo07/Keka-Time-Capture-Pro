@@ -2677,9 +2677,19 @@ function detectMissedSwipes() {
     const missedSwipes = [];
     const monthData = appData.currentMonthData || [];
 
+    // Get today's date string in "Mon, 08 Dec" format to match data
+    const now = new Date();
+    const todayStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+    // Note: This format "14 Jan" might need adjustment to match "Wed, 14 Jan"
+    // Let's use a safer comparison by parsing the date string from the data
+
     monthData.forEach(day => {
         // Detect missed swipe: marked Present but no hours logged
-        if (day.status === 'Present' && (!day.hours || day.hours < 60000)) { // Less than 1 minute
+        // ALSO: Exclude today (as the day is still in progress)
+
+        const isToday = day.date.includes(todayStr) || (parseDateFromString(day.date)?.toDateString() === now.toDateString());
+
+        if (!isToday && day.status === 'Present' && (!day.hours || day.hours < 60000)) { // Less than 1 minute
             missedSwipes.push({
                 date: day.date,
                 status: 'Missed Swipe',
@@ -2741,7 +2751,7 @@ function renderMissedSwipes() {
         if (missedSwipes.length === 0) {
             container.innerHTML = `
                 <div style="text-align: center; padding: 20px; color: var(--label-color); font-size: 12px;">
-                    <div style="font-size: 40px; margin-bottom: 10px;">âœ…</div>
+                    <div style="font-size: 40px; margin-bottom: 10px;">✅</div>
                     <div>No missed swipes detected!</div>
                 </div>
             `;
@@ -2751,7 +2761,7 @@ function renderMissedSwipes() {
                     <div class="missed-swipe-item" style="padding: 12px; margin-bottom: 8px; background: rgba(255, 59, 48, 0.1); border-left: 3px solid var(--error-color); border-radius: 6px;">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div>
-                                <div style="font-weight: 600; font-size: 12px; color: var(--text-color);">ðŸ“… ${swipe.date}</div>
+                                <div style="font-weight: 600; font-size: 12px; color: var(--text-color);">🗓️ ${swipe.date}</div>
                                 <div style="font-size: 10px; color: var(--label-color); margin-top: 4px;">${swipe.issue}</div>
                             </div>
                             <div style="background: var(--error-color); color: white; padding: 4px 8px; border-radius: 4px; font-size: 9px; font-weight: 600;">
@@ -2787,7 +2797,7 @@ function renderIncompleteHours() {
         if (incompleteHours.length === 0) {
             container.innerHTML = `
                 <div style="text-align: center; padding: 20px; color: var(--label-color); font-size: 12px;">
-                    <div style="font-size: 40px; margin-bottom: 10px;">ðŸŽ¯</div>
+                    <div style="font-size: 40px; margin-bottom: 10px;">🎯</div>
                     <div>All working days met the 8-hour target!</div>
                 </div>
             `;
@@ -2797,7 +2807,7 @@ function renderIncompleteHours() {
                     <div class="incomplete-hours-item" style="padding: 12px; margin-bottom: 8px; background: rgba(255, 149, 0, 0.1); border-left: 3px solid var(--warning-color); border-radius: 6px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                             <div>
-                                <div style="font-weight: 600; font-size: 12px; color: var(--text-color);">ðŸ“… ${day.date}</div>
+                                <div style="font-weight: 600; font-size: 12px; color: var(--text-color);">🗓️ ${day.date}</div>
                                 <div style="font-size: 10px; color: var(--label-color); margin-top: 4px;">Worked: ${day.hoursWorkedFormatted}</div>
                             </div>
                             <div style="background: var(--warning-color); color: white; padding: 4px 8px; border-radius: 4px; font-size: 9px; font-weight: 600;">
@@ -2807,7 +2817,7 @@ function renderIncompleteHours() {
                         <div class="progress-bar-container" style="height: 6px; background: rgba(0,0,0,0.2); border-radius: 3px; overflow: hidden;">
                             <div class="progress-bar-fill" style="width: ${day.percentage}%; height: 100%; background: var(--warning-color); border-radius: 3px;"></div>
                         </div>
-                        <div style="font-size: 9px; color: var(--error-color); margin-top: 6px;">âš ï¸ Short by ${day.shortageFormatted}</div>
+                        <div style="font-size: 9px; color: var(--error-color); margin-top: 6px;">⚠️ Short by ${day.shortageFormatted}</div>
                     </div>
                 `;
             });
